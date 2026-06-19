@@ -8,6 +8,8 @@ import {
   Delete,
   Patch,
   NotFoundException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
@@ -16,6 +18,23 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 @Controller('leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
+
+  // Public endpoint — no auth required. Anyone can submit interest form.
+  @Post('public-capture')
+  @HttpCode(HttpStatus.CREATED)
+  publicCapture(@Body() body: any) {
+    return this.leadsService.create({
+      name: body.name,
+      email: body.email,
+      phone: body.phone || '',
+      company: body.company || '',
+      source: 'Interest Form',
+      message: body.message || '',
+      interest: body.interest || '',
+      status: 'NEW',
+      value: 0,
+    });
+  }
 
   @Post()
   create(@Body() body: CreateLeadDto) {

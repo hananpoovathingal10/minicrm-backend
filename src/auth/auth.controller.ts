@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Headers, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Post, Get, Headers, UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -7,7 +7,11 @@ export class AuthController {
 
   @Post('register')
   register(@Body() body: any) {
-    return this.authService.register(body.email, body.password);
+    try {
+      return this.authService.register(body.email, body.password, body.name);
+    } catch (err: any) {
+      throw new ConflictException(err.message || 'Registration failed');
+    }
   }
 
   @Post('login')

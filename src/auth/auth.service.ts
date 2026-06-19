@@ -129,9 +129,15 @@ export class AuthService {
     };
   }
 
-  register(email: string, password: string) {
+  register(email: string, password: string, name?: string) {
+    const existing = this.users.find((u) => u.email === email);
+    if (existing) {
+      throw new Error('An account with this email already exists.');
+    }
+
     const user = {
       id: this.users.length + 1,
+      name: name || '',
       email,
       password,
     };
@@ -141,7 +147,7 @@ export class AuthService {
     const token = `mock-token-${email}`;
     return {
       message: 'User registered successfully',
-      user,
+      user: { id: user.id, name: user.name, email: user.email },
       token,
       access_token: token,
     };
